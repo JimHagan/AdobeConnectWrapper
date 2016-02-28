@@ -1,4 +1,17 @@
 # -*- coding: utf-8 -*-
+"""
+This module defines a number of classes that are meant to provide a higher level integration w/ AdobeConnect.
+It is built upon the basic AdobeConnectAPI wrapper defined in adobe_connect.py.  
+
+Class Descriptions:
+
+AdobeConnectUser - Class for mapping a django user to an adobe connect user account id
+AdobeConnectKeyLog - Model for storing host key usage for our AdobeConnect account
+AdobeConnectKeyManager - Class for recycling keys as needed 
+AdobeConnectMeetingManager - Abstract base class for managing all resources associated with a meeting
+"""
+
+
 from flashnotes.apps.learningspace.adobe_connect import AdobeConnectAPI,\
     AdobeConnectionError, generate_random_id
 
@@ -13,7 +26,6 @@ except AdobeConnectionError:
 
 class AdobeConnectArtifact(models.Model):
     artifact_id = models.CharField(max_length=255)
-
 
 class AdobeConnectUser(models.Model):
     """
