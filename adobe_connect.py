@@ -524,7 +524,7 @@ class AdobeConnectAPI(object):
     def get_participants_for_meeting(self, meeting_sco_id):
         """
         :param meeting_sco_id: Adobe Connect resource id for meeting
-        :return: List of one or more AdobeConnectUserAccount
+        :return: List of one or more AdobeConnectMeetingParticipant
         """
         fn_get_participants_for_meeting_template = "https://{0}/api/xml?" \
                                                    "action=report-event-participants-complete-information" \
