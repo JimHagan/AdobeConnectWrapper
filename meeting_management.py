@@ -13,7 +13,7 @@ AdobeConnectMeetingManager - Abstract base class for managing all resources asso
 
 
 from flashnotes.apps.learningspace.adobe_connect import AdobeConnectAPI,\
-    AdobeConnectionError, generate_random_id
+    AdobeConnectError, generate_random_id
 
 logger = logging.getLogger(__name__)
 
@@ -156,10 +156,10 @@ class AdobeConnectUser(models.Model):
     def get_url_for_meeting_recording(self, ac_api, ac_meeting_sco_id):
         artifacts = ac_api.get_artifacts_for_meeting(ac_meeting_sco_id)
         if len(artifacts) > 1:
-            raise AdobeConnectionError("There should only be a single artifact per session!")
+            raise AdobeConnectError("There should only be a single artifact per session!")
 
         if not len(artifacts):
-            raise AdobeConnectionError("No artifacts found for meeting %s" % ac_meeting_sco_id)
+            raise AdobeConnectError("No artifacts found for meeting %s" % ac_meeting_sco_id)
 
         session_cookie = ac_api.authenticate_participant(self.login,
                                                          self.pwd)
