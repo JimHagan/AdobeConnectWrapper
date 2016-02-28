@@ -551,6 +551,7 @@ class AdobeConnectAPI(object):
                                                                             sco_id)
 
         self._make_request(fn_delete_meeting_room_url)
+        return True
 
     def authenticate_participant(self, user_login, user_password):
         """
@@ -574,7 +575,7 @@ class AdobeConnectAPI(object):
             raise AdobeConnectionError(str(e))
 
     def get_known_groups(self):
-        pass
+        pass # Implement later
 
     def update_group_for_user(self, user_principal_id, group_name, remove=False):
         """
