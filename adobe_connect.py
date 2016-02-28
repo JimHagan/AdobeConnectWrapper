@@ -39,11 +39,15 @@ def get_breeze_session_id(cookies_list):
         if "BREEZESESSION" in cookie:
             # return just the session id
             return cookie[14:]
-    raise AdobeConnectionError("Breeze session cookie not found in response cookie list.")
+    raise AdobeConnectError("Breeze session cookie not found in response cookie list.")
 
+class AdobeConnectError(Exception):
+    pass
 
 class AdobeConnectRecording:
-
+"""
+Generated from AdobeConnect recording XML
+"""
     def __init__(self):
         self.sco_id = None
         self.url = None
@@ -60,7 +64,7 @@ class AdobeConnectRecording:
         if len(self.sco_id) > 0:
             self.sco_id = self.sco_id[0]
         else:
-            raise AdobeConnectionError("No Sco-Id found for recording.")
+            raise AdobeConnectError("No Sco-Id found for recording.")
 
         self.url = root.xpath("./url-path/text()")
         if len(self.url) > 0:
@@ -77,9 +81,9 @@ class AdobeConnectRecording:
 
 
 class AdobeConnectUserAccount():
-    """
-     Encapsulates AdobeConnect User Account Information
-    """
+"""
+Generated from AdobeConnect user account XML
+"""
     def __init__(self):
         self.login = None
         self.name = None
@@ -94,35 +98,37 @@ class AdobeConnectUserAccount():
         if len(root) > 0:
             root = root[0]
         else:
-            raise AdobeConnectionError("No 'principal' node found in user "
+            raise AdobeConnectError("No 'principal' node found in user "
                                        "account creation response.")
 
         self.principal_id = root.xpath("./@principal-id")
         if len(self.principal_id) > 0:
             self.principal_id = self.principal_id[0]
         else:
-            raise AdobeConnectionError("principal-id not returned during user "
+            raise AdobeConnectError("principal-id not returned during user "
                                        "account creation.")
 
         self.name = root.xpath("./name/text()")
         if len(self.name) > 0:
             self.name = self.name[0]
         else:
-            raise AdobeConnectionError("User's name not returned during user "
+            raise AdobeConnectError("User's name not returned during user "
                                        "account creation.")
 
         self.login = root.xpath("./login/text()")
         if len(self.login) > 0:
             self.login = self.login[0]
         else:
-            raise AdobeConnectionError("Login (user's email) not returned "
+            raise AdobeConnectError("Login (user's email) not returned "
                                        "during user account creation.")
 
         return self
 
 
 class AdobeConnectMeetingParticipant(AdobeConnectUserAccount):
-
+"""
+Generated from AdobeConnect meeting participant XML
+"""
     def __init__(self, meeting_sco_id):
         AdobeConnectUserAccount.__init__(self)
         self.role = None
@@ -159,9 +165,9 @@ class AdobeConnectMeetingParticipant(AdobeConnectUserAccount):
 
 
 class AdobeConnectMeeting():
-    """
-      Encapsulates AdobeConnect Meeting Information
-    """
+"""
+Generated from AdobeConnect meeting XML
+"""
 
     def __init__(self, ):
         self.sco_id = None
@@ -182,14 +188,14 @@ class AdobeConnectMeeting():
         elif len(root_sco) > 0:
             root = root_sco[0]
         else:
-            raise AdobeConnectionError("No 'row' or 'sco' node found in "
+            raise AdobeConnectError("No 'row' or 'sco' node found in "
                                        "meeting response.")
 
         sco_id = root.xpath("./@sco-id")
         if len(sco_id) > 0:
             self.sco_id = sco_id[0]
         else:
-            raise AdobeConnectionError("No SCO-ID found in 'get_meeting' "
+            raise AdobeConnectError("No SCO-ID found in 'get_meeting' "
                                        "results")
 
         # Get meetings returns xml with "url" create meeting returns "url-path"
@@ -221,11 +227,6 @@ class AdobeConnectMeeting():
             self.date_modified = date_modified[0]
 
         return self
-
-
-class AdobeConnectionError(Exception):
-    pass
-
 
 class AdobeConnectAPI(object):
     """
@@ -286,7 +287,7 @@ class AdobeConnectAPI(object):
             return True
 
         except Exception as e:
-            raise AdobeConnectionError(str(e))
+            raise AdobeConnectError(str(e))
 
     def _make_request(self, url):
         if not self._is_authenticated or \
@@ -309,13 +310,13 @@ class AdobeConnectAPI(object):
             if len(root) > 0:
                 root = root[0]
             else:
-                raise AdobeConnectionError("No results returned by request.")
+                raise AdobeConnectError("No results returned by request.")
 
             status_code = root.xpath("./status/@code")[0]
             status_code = status_code.lower()
 
             if status_code != "ok":
-                raise AdobeConnectionError("Request returned status other "
+                raise AdobeConnectError("Request returned status other "
                                            "than 'ok' - status code: {0}\n{1}"
                                            .format(status_code,
                                                    xml))
@@ -323,7 +324,7 @@ class AdobeConnectAPI(object):
             return xml
 
         except Exception as e:
-            raise AdobeConnectionError(str(e))
+            raise AdobeConnectError(str(e))
 
     def get_meetings(self, sco_id_list=None, start_date=None, end_date=None):
         """
@@ -451,7 +452,7 @@ class AdobeConnectAPI(object):
         if len(meeting) > 0:
             meeting = meeting[0]
         else:
-            raise AdobeConnectionError("No meeting exists for sco_id: {0}".format(sco_id))
+            raise AdobeConnectError("No meeting exists for sco_id: {0}".format(sco_id))
 
         fn_meeting_url_for_user_template = "https://{0}/{1}"
         fn_meeting_url_for_user_url = fn_meeting_url_for_user_template.format(settings.FN_CONNECT_DOMAIN,
@@ -572,7 +573,7 @@ class AdobeConnectAPI(object):
             cookie = get_breeze_session_id(cookies_list)
             return cookie
         except Exception as e:
-            raise AdobeConnectionError(str(e))
+            raise AdobeConnectError(str(e))
 
     def get_known_groups(self):
         pass # Implement later
